@@ -54,7 +54,10 @@
     });
     
     function update(){
-      if(localStorage.laborView){
+      var tmp = getUrlVars()["pid"];
+      if(tmp){
+        pid = tmp;
+      }else if(localStorage.laborView){
         pid = localStorage.laborView;
       }else{
         $('#pidEnter').modal('show');
@@ -103,6 +106,14 @@
            });
         });
       }
+    }
+
+    function getUrlVars() {
+      var vars = {};
+      var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+      });
+      return vars;
     }
     
     //for getting current date for manual entry
