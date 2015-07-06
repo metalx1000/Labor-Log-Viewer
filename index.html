@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Labor Log Viewer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script>
+    var url = "http://filmsbykris.com/scripts/laborlog/view.php"
+    var pid, log;
+    
+    $(document).ready(function(){
+      update();
+    
+      setInterval(function(){
+        update();
+      },5000);  
+      
+      $("#pidAdd").click(function(){
+        console.log("added");
+        pid = $("#pid").val();
+        localStorage.laborView = pid;
+        update();
+      });
+    });
+    
+    function update(){
+      if(localStorage.laborView){
+        pid = localStorage.laborView;
+      }else{
+        $('#pidEnter').modal('show');
+      }
+     
+      
+      if(pid != 'undefined'){ 
+        $("#msg").html("View Log For User: " + pid);
+        $.post(url,{pid:pid},function(log){
+            var last = 0;
+            log = log.split(","); 
+            $("#table").html("");
+            log.forEach(function(entry){
+              entry = parseInt(entry);
+              var date = new Date(entry);
+              var time = formatAMPM(date);
+
+              var time = date.getTime();
+              var diff = (time - last) / 1000;
+              if(last == 0 ){
+                var minutes = "First Entry";
+              }else if(last == 0 ){
+                var minutes = "Previous Entries Not Shown";
+              }else{
+                var minutes = Math.round(diff / 60);
+              }
+      
+              last = time;
+              if(minutes > 86400){
+                minutes = "More than 24 hours";
+              }else if(minutes > 60){
+                minutes = "More than an hour";
+              }else if(minutes < 6){
+                date = "<a style='font-weight: bold' class='text-danger'>" + date + "</a>";
+                minutes = "<a style='font-weight: bold' class='text-danger'>" + minutes + "</a>";
+              }else if(minutes < 10){
+                date = "<a style='font-weight: bold'>" + date + "</a>";
+                minutes = "<a style='font-weight: bold'>" + minutes + "</a>";
+              }             
+              
+              $("#table").append("<tr>"+
+                "<td>"+time+"</td>"+
+                "<td>"+minutes+"</td>"+
+                "</tr>");
+            
+           });
+        });
+      }
+    }
+    
+    //for getting current date for manual entry
+    Date.prototype.toDateInputValue = (function() {
+        var local = new Date(this);
+        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+        return local.toJSON().slice(0,10);
+    });
+    
+    function formatAMPM(date) {
+      var day = date.toDateInputValue();
+      var hours = date.getHours();
+      var minutes = date.getMinutes();
+      var ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      var strTime = day + " " + hours + ':' + minutes + ' ' + ampm;
+      return strTime;
+    }     
+  </script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Viewing Log</h2>
+  <p id="msg"></p>            
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Minutes Appart</th>
+      </tr>
+    </thead>
+    <tbody id="table">
+
+    </tbody>
+  </table>
+  <hr>
+  <p>Time since last contraction is rounded to nearest minute</p>           
+  <p style='font-weight: bold' class='text-primary'>Blue Bold Text = Contractions Under 10 Minutes</p> 
+  <p style='font-weight: bold' class='text-danger'>Red Bold Text = Contractions 5 Minutes Or Less Apart</p>   
+  <button id="pidEnter_btn" type="button" class="btn btn-primary btn-block btn-lg">Enter Log ID</button>
+ 
+</div>
+
+
+
+<!--popup window-->
+<div id="pidEnter" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Enter Log ID</h4>
+      </div>
+      <div class="modal-body text-center">
+        <p id="timeMsg">
+          <label>Enter the Log ID found in the Labor Log App</label>
+          <input type="text" id="pid" name="pid">
+          <br>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button id="pidAdd" type="button" class="btn btn-primary" data-dismiss="modal">View Log</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
