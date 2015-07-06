@@ -19,10 +19,13 @@
       },5000);  
       
       $("#pidAdd").click(function(){
-        console.log("added");
-        pid = $("#pid").val();
+        pid = $("#pid").val().toUpperCase();
         localStorage.laborView = pid;
         update();
+      });
+      
+      $("#pidEnter_btn").click(function(){
+        $('#pidEnter').modal('show');
       });
     });
     
@@ -137,7 +140,7 @@
       <div class="modal-body text-center">
         <p id="timeMsg">
           <label>Enter the Log ID found in the Labor Log App</label>
-          <input type="text" id="pid" name="pid">
+          <input type="text" id="pid" name="pid" class="text-uppercase">
           <br>
         </p>
       </div>
