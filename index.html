@@ -55,12 +55,15 @@
     
     function update(){
       var tmp = getUrlVars()["pid"];
-      if(tmp){
-        pid = tmp;
-      }else if(localStorage.laborView){
-        pid = localStorage.laborView;
-      }else{
-        $('#pidEnter').modal('show');
+      if(!pid){
+        if(tmp){
+          pid = tmp;
+          localStorage.laborView = pid;
+        }else if(localStorage.laborView){
+          pid = localStorage.laborView;
+        }else{
+          $('#pidEnter').modal('show');
+        }
       }
      
       
