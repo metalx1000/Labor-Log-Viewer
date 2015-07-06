@@ -70,7 +70,6 @@
             log.forEach(function(entry){
               entry = parseInt(entry);
               var date = new Date(entry);
-              var time = formatAMPM(date);
 
               var time = date.getTime();
               var diff = (time - last) / 1000;
@@ -82,6 +81,7 @@
                 var minutes = Math.round(diff / 60);
               }
       
+              date = formatAMPM(date);
               last = time;
               if(minutes > 86400){
                 minutes = "More than 24 hours";
@@ -96,7 +96,7 @@
               }             
               
               $("#table").append("<tr>"+
-                "<td>"+time+"</td>"+
+                "<td>"+date+"</td>"+
                 "<td>"+minutes+"</td>"+
                 "</tr>");
             
