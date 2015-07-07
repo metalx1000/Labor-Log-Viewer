@@ -32,8 +32,8 @@
   <meta name="theme-color" content="#ffffff">
   
   <script>
-    var url = "http://filmsbykris.com/scripts/laborlog/view.php"
-    var pid, log;
+    var url = "http://filmsbykris.com/scripts/laborlog/view.php";
+    var pid;
     
     $(document).ready(function(){
       update();
@@ -74,7 +74,7 @@
             log = log.split(","); 
             $("#table").html("");
             log.forEach(function(entry){
-              entry = parseInt(entry);
+              entry = Number(entry);
               var date = new Date(entry);
 
               var time = date.getTime();
